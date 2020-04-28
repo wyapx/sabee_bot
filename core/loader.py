@@ -47,6 +47,10 @@ class PluginsManager:
                 mod = import_module(path)
                 if reload_module:
                     reload(mod)
+                    mod.reload_child()
+                else:
+                    if hasattr(mod, "setup"):
+                        mod.setup()
                 self._parse_export(mod.export)
             except Exception as e:
                 logger.Session.exception(f"reload error in module {path}:")

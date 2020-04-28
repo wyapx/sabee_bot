@@ -103,7 +103,7 @@ async def test():
 async def cget(app: Mirai, group: Group, member: Member):
     if member.id in room[state[member.id]]:
         await app.sendGroupMessage(group, [At(member.id),
-                                           Image.fromBytes(bind[state[member.id]].get_image(quality=random.randint(90, 100)))])
+                                           Image.fromBytes(bind[state[member.id]].get_image(quality=random.randint(90, 99)))])
     else:
         await app.sendGroupMessage(group, [At(member.id), Plain("未找到你所处的房间")])
 

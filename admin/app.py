@@ -10,8 +10,7 @@ async def set_active(app: Mirai, group: Group, member: Member, message: MessageC
         if group.id in conf.get("banner", "group_id"):
             return
         conf.get("active", "group_id").append(group.id)
-        msg = await app.sendGroupMessage(group, [At(member.id), Plain("启用")])
-        call_later(10, app.revokeMessage, msg.messageId)
+        await app.sendGroupMessage(group, [At(member.id), Plain("激活成功，输入 !help 获取帮助")])
 
 
 async def set_inactive(app: Mirai, group: Group, member: Member):
@@ -153,7 +152,7 @@ async def edit_nick(app: Mirai, group: Group, member: Member, cp: CommandParser)
         elif not pa:
             return await app.sendGroupMessage(group, [At(member.id), Plain("参数不能为空")])
         info = await app.botMemberInfo(group)
-        info.modify({"name": pa[0][1]})
+        info.modify(name=str(pa[0][1]))
         await app.changeMemberInfo(group, app.qq, info)
         await app.sendGroupMessage(group, [At(member.id), Plain("修改成功")])
     else:

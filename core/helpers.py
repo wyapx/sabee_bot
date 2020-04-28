@@ -2,9 +2,10 @@ import json
 import re
 import asyncio
 import aiohttp
+import importlib
 from functools import partial
-from mirai import MessageChain
-from typing import List, Tuple
+from mirai import MessageChain, Image
+from typing import List, Tuple, Optional
 from .config import conf
 
 
@@ -34,7 +35,7 @@ class CommandParser:
                 cm += 1
                 sp = True
                 if match.group(1) in ("At", "Face"):
-                    result.append((match.group(1), match.group(2).split("=", 1)[1]))
+                    result.append((match.group(1), int(match.group(2).split("=", 1)[1])))
                 else:
                     result.append(match.groups())
             else:
@@ -49,7 +50,7 @@ class CommandParser:
             raise ValueError(f"{len(self._msg)} object need, but {cm} got")
         return result
 
-    def parse_with_valid(self, typ: (list, tuple)) -> (str, List[tuple], None):
+    def parse_with_valid(self, typ: (list, tuple), ignore_type=False) -> (str, List[List], None):
         raw = self._parse(len(typ))
         if not raw:
             return None
@@ -135,5 +136,11 @@ async def wget(url: str, headers=None, typ="plain"):
                 return res.status, await res.json()
             else:
                 raise ValueError("Unknown type:", typ)
+
+
+def reload_modules(modules: list):
+    for x in modules:
+        importlib.reload(x)
+
 
 qname = Qname_pool()

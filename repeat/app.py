@@ -13,7 +13,7 @@ async def repeat(app: Mirai, group: Group, member: Member, cp: CommandParser):
     if member.id not in admin and args[0][1] > 3:
         return await app.sendGroupMessage(group, [At(member.id), Plain("次数不能大于3")])
     for _ in range(args[0][1]):
-        await app.sendGroupMessage(group, [Plain(args[1][1])])
+        await app.sendGroupMessage(group, [Plain(str(args[1][1]))])
 
 export = {
     "command": {"rp": repeat}

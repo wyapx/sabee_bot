@@ -6,6 +6,7 @@ from mirai import Mirai, Group, Member, Plain, At, MessageChain, Image
 from .compoments import Parser
 from .spider import kisssub
 
+
 # code from https://github.com/DaRealFreak/saucenao/blob/master/saucenao/saucenao.py
 DataBase = {
     0: "HMagazines",
