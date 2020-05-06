@@ -1,6 +1,6 @@
 import random
 from core.helpers import CommandParser
-from mirai import Mirai, Plain, Member, Group, At, Image, Source
+from mirai import Mirai, Plain, Member, Group, At, Image, Source, JsonMessage
 from .core import ChessControl
 
 room = {}

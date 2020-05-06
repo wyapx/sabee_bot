@@ -1,8 +1,8 @@
 import json
 import random
 
-from mirai import Mirai, Group, MessageChain, Member, Plain, At, Source
-from mirai.event.message.components import Json, Poke, FlashImage
+from mirai import Mirai, Group, MessageChain, Member, Plain, At, Source, JsonMessage
+from mirai.event.message.components import Poke, FlashImage
 
 from core.config import conf
 # from sympy import sympify
@@ -38,7 +38,7 @@ async def quote(app: Mirai, group: Group, message: MessageChain, member: Member,
 
 async def testjson(app: Mirai, group: Group, member: Member):
     if member.id in conf.get("permission", "operator"):
-        return await app.sendGroupMessage(group, Json(json={"app": "com.tencent.gamecenter.gameshare", "desc": "", "view": "noDataView", "ver": "0.0.0.0","prompt": "英雄分享：影流之主", "meta": {"shareData": {"scene": "SCENE_SHARE_VIDEO","jumpUrl": "https://url.cn/5VN4uaZ","type": "video", "url": "http:\/\/t.cn\/A6wslkFS"}},"config": {"forward": 1}}))
+        return await app.sendGroupMessage(group, JsonMessage(json={"app": "com.tencent.gamecenter.gameshare", "desc": "", "view": "noDataView", "ver": "0.0.0.0","prompt": "英雄分享：影流之主", "meta": {"shareData": {"scene": "SCENE_SHARE_VIDEO","jumpUrl": "https://url.cn/5VN4uaZ","type": "video", "url": "http:\/\/t.cn\/A6wslkFS"}},"config": {"forward": 1}}))
     else:
         return await app.sendGroupMessage(group, Plain("功能暂未开放"))
 
@@ -59,6 +59,13 @@ async def flashimage(app: Mirai, group: Group):
     await app.sendGroupMessage(group, Plain("这不是一张色图"))
     return await app.sendGroupMessage(group, [FlashImage.fromFileSystem("tools/setu.jpg")])
 
+async def testkick(app: Mirai, group: Group, member: Member):
+    if member.id in conf.get("permission", "operator"):
+        await app.sendGroupMessage(group, Plain("我滚了"))
+        await app.quit(group)
+    else:
+        return await app.sendGroupMessage(group, Plain("功能暂未开放"))
+
 export = {
     "active": [quote],
     "command": {
@@ -68,6 +75,7 @@ export = {
         "test": test,
         "json": testjson,
         "poke": testpoke,
-        "setu": flashimage
+        "setu": flashimage,
+        "gun": testkick
     }
 }

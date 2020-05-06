@@ -1,11 +1,16 @@
 from core.events import app
 from core.loader import manager
-from core.helpers import interval
 from core.config import conf
-from sabee_line.app import save
 
 if __name__ == '__main__':
     conf.set("storage", "total_handle", 0)
-    print(manager.load_modules())
-    app.run()
+    err = manager.load_modules()
+    if not err:
+        print("All module loaded")
+    else:
+        print("Catch some error:", err)
+    try:
+        app.run()
+    except KeyboardInterrupt:
+        print("Force Stopped")
     conf.save()

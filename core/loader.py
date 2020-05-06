@@ -39,9 +39,9 @@ class PluginsManager:
             elif k == "help":
                 self.help.update(v)
 
-    def load_modules(self, reload_module=False) -> List[Exception]:
+    def load_modules(self, reload_module=False) -> dict:
         self._flush()
-        error = []
+        error = {}
         for path in self.mp:
             try:
                 mod = import_module(path)
@@ -54,11 +54,11 @@ class PluginsManager:
                 self._parse_export(mod.export)
             except Exception as e:
                 logger.Session.exception(f"reload error in module {path}:")
-                error.append(e)
+                error[path] = e
                 continue
         return error
 
-    def reload_modules(self) -> List[Exception]:
+    def reload_modules(self) -> dict:
         return self.load_modules(reload_module=True)
 
 

@@ -4,8 +4,8 @@ import asyncio
 import aiohttp
 import importlib
 from functools import partial
-from mirai import MessageChain, Image
-from typing import List, Tuple, Optional
+from mirai import MessageChain
+from typing import List, Tuple
 from .config import conf
 
 
@@ -141,6 +141,22 @@ async def wget(url: str, headers=None, typ="plain"):
 def reload_modules(modules: list):
     for x in modules:
         importlib.reload(x)
+
+
+def strQ2B(ustring):
+    """
+    全角转半角
+    From https://www.cnblogs.com/kaituorensheng/p/3554571.html
+    """
+    rstring = ""
+    for uchar in ustring:
+        inside_code = ord(uchar)
+        if inside_code == 12288:
+            inside_code = 32
+        elif 65281 <= inside_code <= 65374:
+            inside_code -= 65248
+        rstring += chr(inside_code)
+    return rstring
 
 
 qname = Qname_pool()

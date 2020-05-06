@@ -5,6 +5,7 @@ export = app.export
 
 def reload_child():
     global export
+    app.save()
     from core.helpers import reload_modules
     reload_modules([app])
     export = app.export

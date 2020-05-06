@@ -1,15 +1,19 @@
 import os
 import json
 import time
-from core.helpers import qname, CommandParser
+import random
+from core.config import conf
+from core.helpers import qname, CommandParser, call_later
 from mirai import At, Plain, Mirai, Group, Member
+
+lottery_lock = set()
 
 
 def t2(i):
     return i[1]
 
 def getpath(name=""):
-    return os.path.join("sabee_line/storage", (str(name) or time.strftime("%y%m%d"))+".json")
+    return os.path.join("sabee_rank/storage", (str(name) or time.strftime("%y%m%d"))+".json")
 
 
 def sabee_add(d, group_id, member_id):
@@ -46,7 +50,7 @@ def save():
     print("saved")
 
 async def lm_create(app: Mirai, count_data: dict, gid: int, mid: int):
-    raw = sabee_gets(count_data, str(gid), count=8)
+    raw = sabee_gets(count_data, str(gid), count=10)
     if not raw:
         return [At(mid), Plain("暂时还没有数据..")]
     result = [At(mid), Plain("发言数统计：\n")]
@@ -78,8 +82,37 @@ async def lm(app: Mirai, group: Group, member: Member, cp: CommandParser):
 async def sabee_plus(group: Group, member: Member):
     sabee_add(sabee, str(group.id), str(member.id))
 
+def lock(name: int):
+    if name not in lottery_lock:
+        if name not in conf.get("permission", "operator"):
+            lottery_lock.add(name)
+            call_later(240, lottery_lock.remove, name)
+        return True
+    else:
+        return False
+
+async def lottery(app: Mirai, group: Group, member: Member):
+    if group:
+        raw = sabee_gets(sabee, str(group.id), count=10)
+        print(raw)
+        if not raw:
+            return await app.sendGroupMessage(group, [At(member.id), Plain("至少要有3个人才能开始...")])
+        victim = random.choice(raw)
+        mt = random.randint(1, 240)
+        try:
+            await app.mute(group, int(victim[0]), 300)
+            call_later(mt, app.unmute, group=group.id, member=int(victim[0]))
+            return await app.sendGroupMessage(group, Plain(f"{(await app.memberInfo(group, int(victim[0]))).name or await qname.query(victim[0])}收到了红茶大礼包*{mt}"))
+        except PermissionError:
+            return await app.sendGroupMessage(group, Plain("我手上的权力还不够呢..."))
+    else:
+        await app.sendGroupMessage(group, [At(member.id), Plain("过一会再来吧")])
+
 
 export = {
-    "command": {"rank": lm},
+    "command": {
+        "rank": lm,
+        "lottery": lottery
+    },
     "active": [sabee_plus]
 }
